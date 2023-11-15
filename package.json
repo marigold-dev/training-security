@@ -1,0 +1,15 @@
+{
+  "name": "training-security",
+  "version": "1.0.0",
+  "description": "## Prerequisites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@taqueria/plugin-ligo": "^0.40.0"
+  }
+}
