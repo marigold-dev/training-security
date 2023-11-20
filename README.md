@@ -1,4 +1,36 @@
-# training-security
+# Security
+
+Web3 or the decentralized web introduces a new set of security challenges while reducing risks and enforcing security on the other side.
+
+User can interact directly with the blockchain network without any third party protection as you the paradigm is now READ-WRITE-OWN. Noone will be responsible for losing your keys or seed phrase and protect you against scams.
+
+On the other hand, cryptography, especially hashing, to ensure data is never altered or removed without agreement from the supporting network. Clients do not have to trust a centralized provider; implicit trust is built into the blockchain
+
+### Off chain attacks
+
+Offchain attacks are a serious threat to the security and reliability of decentralized applications. They can exploit various vulnerabilities in the design, implementation, or deployment of smart contracts or user interfaces. Some examples of offchain attacks are:
+
+- Bugs : A bug is a flaw or error in the code or logic of a smart contract or a frontend. For instance, a frontend may point to a non-existent smart contract address, or invoke an entrypoint with incorrect parameters. This can result in loss of funds, incorrect execution, or denial of service. Bugs can be avoided by proper testing, auditing, and maintenance of the code.
+- Impersonation: An impersonation attack is when an attacker pretends to be someone else, such as a legitimate service provider, a trusted party, or a user. For example, an attacker may create a phishing UI that mimics the appearance and functionality of a real frontend, but sends the user's funds or data to the attacker's address. Alternatively, an attacker may deploy a copy of a contract on the network, with slight modifications that benefit the attacker. Impersonation attacks can be prevented by verifying the identity and authenticity of the parties involved, such as using digital signatures, checksums, or domain verification.
+- Replay attacks: A replay attack is when an attacker reuses a valid transaction from one context to another, without the consent or knowledge of the original sender. For example, an attacker may copy a L1 transaction to a L2 transaction, and execute it on a different chain or layer. This can result in double-spending, unauthorized actions, or inconsistent states. Replay attacks can be mitigated by introducing nonce and chain_id fields in the transactions, which ensure that each transaction is unique and valid for a specific context. Alternatively, a timestamp can be used as a nonce, which makes it easy to detect outdated or replayed transactions.
+- Trusting and no verifying: This situation occurs when a user or a contract blindly accepts or relies on data or information from an offchain source, without verifying its accuracy or integrity. For example, a user may trust an offchain API that provides market data from oracle or an exchange, without checking if the data is correct, manipulated or even inexistent. Similarly, a user may sign any transaction payload from a wallet, without inspecting its content or destination. Trust and no verify can lead to false assumptions, incorrect decisions, or malicious actions. Trust and no verify can be avoided by applying the principle of "trust but verify", which means that any offchain data or information should be validated by multiple sources, cross-checked with onchain data, or confirmed by the user before using it.
+
+### Onchain attacks
+
+This training session will cover the topic of On-chain attacks, which are cyberattacks that target the blockchain network and its components. On-chain attacks can exploit various types of vulnerabilities, such as:
+
+- Programming errors that affect the security and functionality of smart contracts, which are self-executing agreements that run on the blockchain. Smart contracts can have a larger attack surface than traditional applications, as they interact with other contracts and users on the network and so, are subject to higher interest from hackers in draining funds.
+- Different kind of leaks :
+  - Replay attacks: These occur when an attacker intercepts and retransmits a valid transaction on a different blockchain network, causing the same transaction to be executed twice
+  - Memory overflow: This happens when a smart contract runs out of memory or enter on an unexpected context in order to exploit a part of the code.
+  - Reentrancy attacks: These are a type of recursive call vulnerability that allow an attacker to repeatedly call a function within a smart contract before the previous call is finished, resulting in multiple withdrawals or transfers of funds
+- Blockchain user trust and management :
+  - Administrators: These are the entities that have the highest level of authority and control over the contract. They can perform actions such as deploying, upgrading, pausing, or terminating the contract
+  - Lambda / mutable code: This refers to the parts of the contract code that can be changed after deployment, such as parameters, variables, or functions.
+  - Check roles: This is the process of verifying whether a user has the right to execute a certain part of the code, such as calling a function or modifying a state variable.
+  - Trustable oracles: These are the external sources of data that your contract relies on, such as prices, events, or outcomes.
+
+In this training session, we will use a hands-on approach to learn how to identify, prevent, and mitigate On-chain attacks. We will work with a sample code that contains several bugs and vulnerabilities, and we will try to fix them step by step. We will also discuss best practices and recommendations for developing secure and reliable smart contracts and blockchain applications.
 
 ## Prerequisites
 
@@ -7,109 +39,17 @@ To run the code, a Ligo compiler is required and can be installed at this [locat
 Compile the contract with the Ligo compiler
 
 ```bash
-ligo compile contract ./contracts/main.jsligo
+ligo compile contract ./contracts/<MY_CONTRACT_FILE>.jsligo
 ```
 
 or though Taqueria
 
 ```bash
 npm i
-TAQ_LIGO_IMAGE=ligolang/ligo:1.1.0 taq compile main.jsligo
+TAQ_LIGO_IMAGE=ligolang/ligo:1.1.0 taq compile <MY_CONTRACT_FILE>.jsligo
 ```
 
-## Context
+## Useful links
 
-training-security => TODO (https://github.com/InferenceAG/TezosSecurityBaselineChecking/blob/master/readme.md)
-https://opentezos.com/smart-contracts/avoiding-flaws/#8-using-computations-that-cause-tez-overflows
-
-///
-
-### Off chain attacks
-
-- bug
-  - frontend pointing to unexisting KT1 address, wrong call of entrypoint entries etc ... => problem of maintenance
-- impersonalization :
-  - fake apps : fake frontends, emails scams, etc ...
-  - contracts copies : dup contract deployed on the network
-- replay attack : is it possible to copy a L1 tx to a L2 tx ? Ex : gas station use case
-  - solution : introduce NONCE + CHAIN_ID. It can be also a timestamp as nonce (easy to spot)
-- trust and no verify
-  - fake data : FTX & co. You cannot just trust offchain APIs as granted
-  - sign blindly any Tx payload from a wallet
-
-### Onchain attacks
-
-- programming errors
-- leaks
-- user management
-
-We will start with a buggy code and try to fix issues one by one
-
-## Programming errors
-
-- bugs : // deploy a broken Michelson code, not using Ligo compiler for example ...
-
-  - //const d : option<tez> = 1mutez - 2mutez; (https://github.com/InferenceAG/TezosSecurityBaselineChecking/blob/master/testcases/TC-004/mutezUnderflow.tz)
-    => use Ligo
-  - rounding issues : https://opentezos.com/smart-contracts/avoiding-flaws/#9-contract-failures-due-to-rounding-issues
-  - still some bitwise operations are unsecure , like for Bitwise.shift_right or Bitwise.shift_left , it will raise Michelson error if oveflow is reached
-    => solution : do lot of checks on the code or leave default behavior if the consequence is not important
-
-  - Mistake of sender vs source
-    => think twice about potential use case of your endpoint
-
-- lib code change : //TODO example of devops issue
-  => do more unit tests and CI reports
-
-- private
-  - any secret value can be read
-    => don't store secret or encrypt it and reveal it later
-- predictable information used for random :
-
-  - use block timestamp. Can be predictable as it is in seconds and we know the block time more or less
-  - use contract origination address : it is composed of hash of operation + origination index
-    => solution :
-    - ask independant participat to submit a random number. A bit painful as it require to do commit/reveal and a way to unlock a locked situation
-    - good randomness Oracle. It is, in theory, possible to create a good off-chain random Oracle. Chainlink offers a randomness Oracle based on a verifiable random function (VRF), and may be one of the few, if not the only reasonably good available randomness Oracle but not available on Tezos
-
-- leave the contract blocked on a state waiting for a user action. Ex : Shifumi game based on 10min timout to cliam a victory in case of opponent unfair behavior to not play
-  => solution : Always have a way to unlock a situation, setting an admin control or timestamp based resolution
-
-## Leaks
-
-- replay attack : return same op 2 times on the result list !!! //TODO code
-
-- memory (overflow (ex on FA1.2 : https://inference.ag/blog/2023-10-09-FA12_spenders/))
-
-  - integers and nats, as they can be increased to an arbitrary large value
-  - strings, as there is no limit on their lengths
-  - lists, sets, maps, that can contain an arbitrary number of items
-
-  Ex : Anyone could attack this contract by calling the lockAmount entry point with 0 tez many times, to add so many entries into the lockedAmount list, that simply looping through the entries would consume too much gas.
-  From then on, all the funds would be forever locked into the contract.
-  Even simply loading the list into memory and deserializing the data at the beginning of the call, could use so much gas that any call to the contract would fail.
-
-  => solution :
-
-  - ask the user to pay a minimum tez for each call
-  - set a threshold limit
-  - store data on a big_map
-  - avoid unnecessary onchain coputation that can be do off chain. Ex : do not loop onchain and just update the part to purge a map in cache on an indexer ?
-
-- reentrancy (hard but still possible on Tezos ..., the ETH loop of callback does not work but ... . Ex : no idea if possible to send money and loop on withdraw because balance is reset to 0 ???). Implement the test and see that it is not possible on a Test ! //TODO demonstarte it + SHOW this example (https://opentezos.com/smart-contracts/avoiding-flaws/#10-re-entrancy-flaws)
-
-- overflow ??? There is no SafeMath in ligo . Do not confuse with https://packages.ligolang.org/package/@ligo/math-lib that is to manipulate float instead or multiply/deivide by 10^6. For the nat, int, and timestamp types, the Michelson interpreter uses arbitrary-precision arithmetic provided by the OCaml Zarith library. It means that their size is only limited by gas or storage limits. You can store huge numbers in a contract without reaching the limit
-
-=> solution : do operation on int or nat instead of tez as it has larger values
-
-- frontRunning / MEV : It can be done by the baker itself as the list is known in advance at each period ... or any bots litening to the gossip network ...
-  - buy before big BUY TX , sell token after === sandwich attack
-  - BOT : whataver increase user balance, you just copy with higher fees to pass first
-  - BAKER : just change the order
-
-## User trust & management
-
-- administrators : who can do what on the contract ?
-- lambda / mutable code : which part of the code can change, who can do it ? Is it audited ?
-- check roles : Does the user can execute this part of the code? Ex : update_operator, check if sender == owne othrwise, anyone can give permissions.
-- trustable oracles : Do I trust data from this Oracle ? Is he centralized ? Who is behind it ? What is the refresh time policy ?
+https://github.com/InferenceAG/TezosSecurityBaselineChecking/blob/master/readme.md
+https://opentezos.com/smart-contracts/avoiding-flaws
