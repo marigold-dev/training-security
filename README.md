@@ -49,7 +49,6 @@ npm i
 TAQ_LIGO_IMAGE=ligolang/ligo:1.1.0 taq compile <MY_CONTRACT_FILE>.jsligo
 ```
 
-## Let's debug on-chain attacks !
+---
 
 When you're ready, go to Part 1: Programming errors
-.
